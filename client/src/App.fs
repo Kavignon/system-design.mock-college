@@ -31,25 +31,16 @@ let update (msg: Msg) (state: State) =
                 return LoadCounter (Finished (Error "Error while retrieving Counter from server"))
         }
 
-        { state with Counter = InProgress }, Cmd.fromAsync loadCounter
+        // { state with Counter = InProgress }, Cmd.fromAsync loadCounter
 
     | LoadCounter (Finished counter) ->
         { state with Counter = Resolved counter }, Cmd.none
 
-    | Increment ->
+    | InitiateLogin ->
         let updatedCounter =
             state.Counter
             |> Deferred.map (function
                 | Ok counter -> Ok { counter with value = counter.value + 1 }
-                | Error error -> Error error)
-
-        { state with Counter = updatedCounter }, Cmd.none
-
-    | Decrement ->
-        let updatedCounter =
-            state.Counter
-            |> Deferred.map (function
-                | Ok counter -> Ok { counter with value = counter.value - 1 }
                 | Error error -> Error error)
 
         { state with Counter = updatedCounter }, Cmd.none
