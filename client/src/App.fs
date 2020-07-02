@@ -6,9 +6,15 @@ open Shared
 
 type State = { Counter: Deferred<Result<Counter, string>> }
 
+type UserLoginError =
+    | NotCollegeCode 
+    | UnknownUserCode
+    | PasswordNotRecognized
+    | NoLongerUserOfPlatform
+
 type Msg =
-    | Increment
-    | Decrement
+    | InitiateLogin
+    | ExecuteLogin of AsyncOperationStatus<Result<ValidatedUser, UserLoginError>>
     | LoadCounter of AsyncOperationStatus<Result<Counter, string>>
 
 let init() = { Counter = HasNotStartedYet }, Cmd.ofMsg (LoadCounter Started)
