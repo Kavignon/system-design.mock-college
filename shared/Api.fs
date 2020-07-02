@@ -32,6 +32,15 @@ module AlphaNumericCode =
         | (false, false, true, true) -> Some { UserPrefix = userPrefix; UniversalNumber = universalNumber |> int }
         | _ -> None
 
+type CollegeCode = {
+    Id: AnCode
+}
+
+type MockUserCredentials = {
+    Username: AlphaNumericCode.AnCode
+    Password: string
+    
+}
 /// A type that specifies the communication protocol between client and server
 /// to learn more, read the docs at https://zaid-ajaj.github.io/Fable.Remoting/src/basics.html
 type IServerApi = {
