@@ -65,7 +65,7 @@ let renderCounter (counter: Deferred<Result<Counter, string>>)=
             prop.text errorMsg
         ]
 
-let fableLogo() = StaticFile.import "./imgs/fable_logo.png"
+let csharpvfsharpimage() = StaticFile.import "./imgs/FSharp.V.CSharp2.png"
 
 let render (state: State) (dispatch: Msg -> unit) =
 
