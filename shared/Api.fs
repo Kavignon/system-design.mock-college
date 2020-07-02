@@ -32,6 +32,17 @@ module AlphaNumericCode =
         | (false, false, true, true) -> Some { UserPrefix = userPrefix; UniversalNumber = universalNumber |> int }
         | _ -> None
 
+[<AutoOpen>]
+module SchoolPerformance = 
+    type Gpa = {
+        Value: float
+    }
+
+    let create value =
+        match value with 
+        | x when value >= 1.0 && value <= 4.3 -> Some x
+        | _ -> None
+
 type CollegeCode = {
     Id: AnCode
 }
@@ -41,6 +52,23 @@ type MockUserCredentials = {
     Password: string
     
 }
+
+type ValidatedMockStudent = {
+    Code: AlphaNumericCode.AnCode
+    SemesterCourses: string list
+    GPA: SchoolPerformance.Gpa
+}
+
+type ValidatedMockProfessor = {
+    Code: AlphaNumericCode.AnCode
+    SemesterCourses: string list
+    SupervisedStudentCount: int
+}
+
+type ValidatedUser =
+    | ValidStudent of ValidatedMockStudent
+    | ValidProfessor of ValidatedMockProfessor
+
 /// A type that specifies the communication protocol between client and server
 /// to learn more, read the docs at https://zaid-ajaj.github.io/Fable.Remoting/src/basics.html
 type IServerApi = {
