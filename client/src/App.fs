@@ -69,16 +69,35 @@ let render (state: State) (dispatch: Msg -> unit) =
         prop.children [
 
             Html.img [
-                prop.src(fableLogo())
-                prop.width 250
+                prop.src(csharpvfsharpimage())
+                prop.width 500
             ]
 
-            Html.h1 "Full-Stack Counter"
+            Html.h1 "Welcome to mock college. Please log in."
 
-            Html.button [
-                prop.style [ style.margin 5; style.padding 15 ]
-                prop.onClick (fun _ -> dispatch Increment)
-                prop.text "Increment"
+            Html.form [
+                Html.label [ 
+                    prop.style [ style.margin 5; style.padding 20 ]
+                    prop.text "Mock college code"
+                    prop.name "user_college_code"
+                ]
+
+                Html.input [
+                    prop.style [ style.margin 5; style.padding 20 ]
+                ]
+
+                Html.br []
+
+                Html.label [
+                    prop.style [ style.margin 5; style.padding 20 ]
+                    prop.text "Password"
+                ]
+
+                Html.input [
+                    prop.style [ style.margin 20; style.padding 10; ]
+                    prop.type' "password"
+                    prop.name "user_password"
+                ]
             ]
 
             Html.button [
