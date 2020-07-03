@@ -1,4 +1,4 @@
-module Shared
+﻿module Shared
 
 open System
 
@@ -86,6 +86,8 @@ with
         | ValidProfessor vp -> (vp.UserInformation.FirstName, vp.UserInformation.LastName) ||> tryMakeFullName |> Option.defaultValue "Name missing"
 
 type UserLoginError =
+    | MissingCollegeCode
+    | MissingPassword
     | NotCollegeCode 
     | UnknownUserCode
     | PasswordNotRecognized
@@ -95,7 +97,12 @@ with
         | NotCollegeCode -> "The username provided doesn't match any kind of college code supported by the platform."
         | UnknownUserCode -> "The username provided isn't not recognized in the database. Did you make a mistake?"
         | PasswordNotRecognized -> "The provided password doesn't match any records in the database. Did you make a typo?"
+        | MissingCollegeCode -> "No college code was provided by the user. Please do so."
+        | MissingPassword -> "No password was provided by the user. Please do so."
 
+type UserLoginState =
+    | LoginError of UserLoginError
+    | OkForNextStage of prefix: string * universalNumber: string * password: string
 
 /// A type that specifies the communication protocol between client and server
 /// to learn more, read the docs at https://zaid-ajaj.github.io/Fable.Remoting/src/basics.html
