@@ -62,7 +62,7 @@ let renderAuthenticationResult (deferredAuthResult: Deferred<Result<ValidatedUse
 
 let csharpvfsharpimage() = StaticFile.import "./imgs/FSharp.V.CSharp2.png"
 
-let render (state: State) (dispatch: Msg -> unit) =
+let render (state: PageModel) (dispatch: Msg -> unit) =
 
     Html.div [
         prop.style [
