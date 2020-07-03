@@ -24,30 +24,26 @@ type Msg =
 let defaultLandingPageState = { CollegeCodeString = ""; MockUserPassword = ""; User = HasNotStartedYet }
 
 let init() = LandingPage defaultLandingPageState , Cmd.none
-    match msg with
-    | LoadCounter Started ->
-        let loadCounter = async {
-            try
-                let! counter = Server.api.Counter()
-                return LoadCounter (Finished (Ok counter))
-            with error ->
-                Log.developmentError error
-                return LoadCounter (Finished (Error "Error while retrieving Counter from server"))
-        }
 
-        // { state with Counter = InProgress }, Cmd.fromAsync loadCounter
+let update (msg: Msg) (pageModel: PageModel) =
+    match (pageModel, msg) with
+    | (LandingPage model, SetCollegeCode code) -> 
+        let updatedModel = { model with CollegeCodeString = code }
+        LandingPage updatedModel, Cmd.none
 
-    | LoadCounter (Finished counter) ->
-        { state with Counter = Resolved counter }, Cmd.none
+    | (LandingPage model, SetUserPassword pwd) -> 
+        let updatedModel = { model with MockUserPassword = pwd }
+        LandingPage updatedModel, Cmd.none
 
-    | InitiateLogin ->
-        let updatedCounter =
-            state.Counter
-            |> Deferred.map (function
-                | Ok counter -> Ok { counter with value = counter.value + 1 }
-                | Error error -> Error error)
+    | (LandingPage model, InitiateLoginWorkflow) ->
+        let updatedModel = { model with User = InProgress}
+        LandingPage updatedModel, Cmd.ofMsg (ExecuteLoginWorkflow Started)
 
-        { state with Counter = updatedCounter }, Cmd.none
+    // |(LandingPage model, ExecuteLoginWorkflow Started) -> 
+
+
+    // Nice try - I won't allow you to do anything that shouldn't happen ;)
+    | (_, _) -> pageModel, Cmd.none
 
 let renderAuthenticationResult (deferredAuthResult: Deferred<Result<ValidatedUser, UserLoginError>>)=
     match deferredAuthResult with
