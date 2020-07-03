@@ -1,4 +1,4 @@
-module Shared
+﻿module Shared
 
 open System
 
@@ -93,6 +93,7 @@ type UserLoginError =
     | NotCollegeCode 
     | UnknownUserCode
     | PasswordNotRecognized
+    | ServerError of string
 with 
     member x.ErrorMessage =
         match x with 
@@ -101,6 +102,7 @@ with
         | PasswordNotRecognized -> "The provided password doesn't match any records in the database. Did you make a typo?"
         | MissingCollegeCode -> "No college code was provided by the user. Please do so."
         | MissingPassword -> "No password was provided by the user. Please do so."
+        | ServerError errorMessage -> errorMessage
 
 type UserLoginState =
     | LoginError of UserLoginError
