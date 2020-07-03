@@ -36,18 +36,12 @@ module AlphaNumericCode =
 
 [<AutoOpen>]
 module SchoolPerformance = 
-    type Gpa = {
-        Value: float
-    }
+    type Gpa = { Value: float }
 
     let create value =
         match value with 
         | x when value >= 1.0 && value <= 4.3 -> Some { Value = x }
         | _ -> None
-
-type CollegeCode = {
-    Id: AnCode
-}
 
 type MockUserCredentials = {
     Code: AlphaNumericCode.AnCode
