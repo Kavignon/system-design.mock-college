@@ -80,11 +80,11 @@ let render (state: PageModel) (dispatch: Msg -> unit) =
                     prop.style [ style.margin 5; style.padding 20 ]
                     prop.text "Mock college code"
                     prop.name "user_college_code"
-                    prop.onChange (SetCollegeCode >> dispatch)
                 ]
 
                 Html.input [
                     prop.style [ style.margin 5; style.padding 20 ]
+                    prop.onChange (SetCollegeCode >> dispatch)
                 ]
 
                 Html.br []
