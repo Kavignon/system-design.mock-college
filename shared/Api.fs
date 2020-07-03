@@ -14,6 +14,8 @@ module AlphaNumericCode =
         UserPrefix: string
         UniversalNumber: int
     }
+    with 
+        member x.IsStudentCode = x.UserPrefix = "STU"
 
     /// A validation function based on length
     let private lengthValidator len (s:string) =
