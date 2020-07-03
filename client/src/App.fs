@@ -84,6 +84,7 @@ let render (state: State) (dispatch: Msg -> unit) =
                     prop.style [ style.margin 5; style.padding 20 ]
                     prop.text "Mock college code"
                     prop.name "user_college_code"
+                    prop.onChange (SetCollegeCode >> dispatch)
                 ]
 
                 Html.input [
@@ -101,13 +102,14 @@ let render (state: State) (dispatch: Msg -> unit) =
                     prop.style [ style.margin 20; style.padding 10; ]
                     prop.type' "password"
                     prop.name "user_password"
+                    prop.onChange (SetCollegeCode >> dispatch)
                 ]
             ]
 
             Html.button [
                 prop.style [ style.margin 5; style.padding 15 ]
-                prop.onClick (fun _ -> dispatch Decrement)
-                prop.text "Decrement"
+                prop.onClick (fun _ -> dispatch InitiateLoginWorkflow)
+                prop.text "Sign in"
             ]
 
             match state with 
