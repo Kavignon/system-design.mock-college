@@ -56,16 +56,21 @@ type MockUserCredentials = {
 with 
     member x.Username = x.Code.UserPrefix + x.Code.UniversalNumber.ToString()
 
+type ValidUserInformation = {
+    CollegeCode: AlphaNumericCode.AnCode
+    FirstName: string
+    LastName: string
+    StartedWhen: DateTime
 }
 
 type ValidatedMockStudent = {
-    Code: AlphaNumericCode.AnCode
+    UserInformation: ValidUserInformation
     SemesterCourses: string list
     GPA: SchoolPerformance.Gpa
 }
 
 type ValidatedMockProfessor = {
-    Code: AlphaNumericCode.AnCode
+    UserInformation: ValidUserInformation
     SemesterCourses: string list
     SupervisedStudentCount: int
 }
