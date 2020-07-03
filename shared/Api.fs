@@ -50,9 +50,12 @@ type CollegeCode = {
 }
 
 type MockUserCredentials = {
-    Username: AlphaNumericCode.AnCode
+    Code: AlphaNumericCode.AnCode
     Password: string
-    
+}
+with 
+    member x.Username = x.Code.UserPrefix + x.Code.UniversalNumber.ToString()
+
 }
 
 type ValidatedMockStudent = {
