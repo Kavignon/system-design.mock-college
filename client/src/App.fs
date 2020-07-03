@@ -49,15 +49,15 @@ let init() = LandingPage defaultLandingPageState , Cmd.none
 
         { state with Counter = updatedCounter }, Cmd.none
 
-let renderCounter (counter: Deferred<Result<Counter, string>>)=
-    match counter with
+let renderAuthenticationResult (deferredAuthResult: Deferred<Result<ValidatedUser, UserLoginError>>)=
+    match deferredAuthResult with
     | HasNotStartedYet -> Html.none
-    | InProgress -> Html.h1 "Loading..."
-    | Resolved (Ok counter) -> Html.h1 counter.value
-    | Resolved (Error errorMsg) ->
+    | InProgress -> Html.h1 "Complex authen in progress. Please wait..."
+    | Resolved (Ok validUser) -> Html.h1 (sprintf "Welcome back %s! Please wait a few moments, you will be redirected to your profile" validUser.FullName)
+    | Resolved (Error errorCode) ->
         Html.h1 [
             prop.style [ style.color.crimson ]
-            prop.text errorMsg
+            prop.text errorCode.ErrorMessage
         ]
 
 let csharpvfsharpimage() = StaticFile.import "./imgs/FSharp.V.CSharp2.png"
@@ -110,6 +110,9 @@ let render (state: State) (dispatch: Msg -> unit) =
                 prop.text "Decrement"
             ]
 
-            renderCounter state.Counter
+            match state with 
+            | LandingPage model -> 
+                renderAuthenticationResult model.User
+            | _ -> Html.none
         ]
     ]
