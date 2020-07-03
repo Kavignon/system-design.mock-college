@@ -4,13 +4,32 @@ open Fable.Mocha
 open App
 
 let appTests = testList "App tests" [
-    testCase "Increment and Decrement work" <| fun _ ->
-        // Simplified update that ignores commands/effects
-        let update state msg = fst (App.update msg state)
-        let initialState : App.State = { Counter = Resolved (Ok { value = 0 }) }
-        let incomingMsgs =  [ Increment; Increment; Decrement; Increment ]
+    testCase "Just providing credentials doesn't authenticate without clicking on the 'sign in' button" <| fun _ ->
+        let update state msg = fst (update msg state)
+        let initialState = LandingPage defaultLandingPageState
+        let incomingMsgs =  [ SetCollegeCode "STU12345"; SetUserPassword "mockuser"; ]
         let updatedState = List.fold update initialState incomingMsgs
-        Expect.isTrue (Deferred.resolved updatedState.Counter) "Counter must be resolved"
+        
+        Expect.isFalse (Deferred.resolved updatedState.User) "User must be resolved"
+
+    testCase "You can't be authenticated with the wrong password." <| fun _ ->
+        let update state msg = fst (update msg state)
+        let initialState = LandingPage defaultLandingPageState
+        let incomingMsgs =  [ SetCollegeCode "STU12345"; SetUserPassword "12345"; InitiateLoginWorkflow ]
+        let updatedState = List.fold update initialState incomingMsgs
+        
+        let deferredResult = updatedState.User |> Deferred.getOptResolved |> Option.defaultValue (Error (ServerError "An error occured"))
+        match deferredResult with
+        | Ok _ -> 
+            Expect.isFalse false "The password was wrong on purpose. It can never be Ok."
+        | Error e -> 
+            Expect.isTrue (Deferred.resolved updatedState.User) (sprintf "%s" e.ErrorMessage)
+
+    testCase "Log in valid student" <| fun _ ->
+        let update state msg = fst (update msg state)
+        let initialState = LandingPage defaultLandingPageState
+        let incomingMsgs =  [ SetCollegeCode "STU12345"; SetUserPassword "mockuser"; InitiateLoginWorkflow ]
+        let updatedState = List.fold update initialState incomingMsgs
 
         let counterHasValue n =
             updatedState.Counter
