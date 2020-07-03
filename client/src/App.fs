@@ -6,11 +6,10 @@ open Shared
 
 type State = { Counter: Deferred<Result<Counter, string>> }
 
-type UserLoginError =
-    | NotCollegeCode 
-    | UnknownUserCode
-    | PasswordNotRecognized
-    | NoLongerUserOfPlatform
+type PageModel = 
+    | LandingPage of LandingPageModel
+    | UserProfilePage of ValidatedUser
+    | CourseStudentOverviewPage of ValidatedMockProfessor
 
 type Msg =
     | InitiateLogin

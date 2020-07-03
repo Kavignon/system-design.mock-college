@@ -92,6 +92,18 @@ with
         | ValidStudent vs -> (vs.UserInformation.FirstName, vs.UserInformation.LastName) ||> tryMakeFullName |> Option.defaultValue "Name missing"
         | ValidProfessor vp -> (vp.UserInformation.FirstName, vp.UserInformation.LastName) ||> tryMakeFullName |> Option.defaultValue "Name missing"
 
+type UserLoginError =
+    | NotCollegeCode 
+    | UnknownUserCode
+    | PasswordNotRecognized
+with 
+    member x.ErrorMessage =
+        match x with 
+        | NotCollegeCode -> "The username provided doesn't match any kind of college code supported by the platform."
+        | UnknownUserCode -> "The username provided isn't not recognized in the database. Did you make a mistake?"
+        | PasswordNotRecognized -> "The provided password doesn't match any records in the database. Did you make a typo?"
+
+
 /// A type that specifies the communication protocol between client and server
 /// to learn more, read the docs at https://zaid-ajaj.github.io/Fable.Remoting/src/basics.html
 type IServerApi = {
