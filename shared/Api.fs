@@ -54,12 +54,12 @@ type ValidUserInformation = {
     CollegeCode: AlphaNumericCode.AnCode
     FirstName: string
     LastName: string
+    SemesterCourses: string list
     StartedWhen: DateTime
 }
 
 type ValidatedMockStudent = {
     UserInformation: ValidUserInformation
-    SemesterCourses: string list
     GPA: SchoolPerformance.Gpa
     CompletedCreditCount: int
     EnrolledCreditCount: int
@@ -67,7 +67,6 @@ type ValidatedMockStudent = {
 
 type ValidatedMockProfessor = {
     UserInformation: ValidUserInformation
-    SemesterCourses: string list
     SupervisedStudentCount: int
 }
 
