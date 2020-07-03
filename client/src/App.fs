@@ -4,7 +4,11 @@ open Feliz
 open Elmish
 open Shared
 
-type State = { Counter: Deferred<Result<Counter, string>> }
+type LandingPageModel = {
+    CollegeCodeString: string
+    MockUserPassword: string
+    User: Deferred<Result<ValidatedUser, UserLoginError>>
+}
 
 type PageModel = 
     | LandingPage of LandingPageModel
@@ -12,13 +16,14 @@ type PageModel =
     | CourseStudentOverviewPage of ValidatedMockProfessor
 
 type Msg =
-    | InitiateLogin
-    | ExecuteLogin of AsyncOperationStatus<Result<ValidatedUser, UserLoginError>>
-    | LoadCounter of AsyncOperationStatus<Result<Counter, string>>
+    | SetCollegeCode of string
+    | SetUserPassword of string
+    | InitiateLoginWorkflow
+    | ExecuteLoginWorkflow of AsyncOperationStatus<Result<ValidatedUser, UserLoginError>>
 
-let init() = { Counter = HasNotStartedYet }, Cmd.ofMsg (LoadCounter Started)
+let defaultLandingPageState = { CollegeCodeString = ""; MockUserPassword = ""; User = HasNotStartedYet }
 
-let update (msg: Msg) (state: State) =
+let init() = LandingPage defaultLandingPageState , Cmd.none
     match msg with
     | LoadCounter Started ->
         let loadCounter = async {
