@@ -2,7 +2,9 @@ module App
 
 open Feliz
 open Elmish
+open Elmish.Toastr
 open Shared
+open System
 
 type LandingPageModel = {
     CollegeCodeString: string
@@ -14,16 +16,35 @@ type PageModel =
     | LandingPage of LandingPageModel
     | UserProfilePage of ValidatedUser
     | CourseStudentOverviewPage of ValidatedMockProfessor
+with
+    member x.CurrentUserCode =
+        match x with 
+        | LandingPage model -> model.CollegeCodeString
+        | _ -> ""
+
+    member x.CurrentUserPassword = 
+        match x with 
+        | LandingPage model -> model.MockUserPassword
+        | _ -> ""
+
+    member x.User =
+        match x with 
+        | LandingPage model -> model.User
+        | _ -> HasNotStartedYet
 
 type Msg =
     | SetCollegeCode of string
     | SetUserPassword of string
+    | ShowLoginErrorToastUpdate
+    | ShowLoginSuccessToastUpdate
+    | ClearTextInput
+    | RedirectToProfile
     | InitiateLoginWorkflow
     | ExecuteLoginWorkflow of AsyncOperationStatus<Result<ValidatedUser, UserLoginError>>
 
-let defaultLandingPageState = { CollegeCodeString = ""; MockUserPassword = ""; User = HasNotStartedYet }
+let defaultLandingPageState = { CollegeCodeString = "You should put your college code here."; MockUserPassword = ""; User = HasNotStartedYet }
 
-let init() = LandingPage defaultLandingPageState , Cmd.none
+let init() = LandingPage defaultLandingPageState, Cmd.none
 
 let validateUserStringCredentials code password =
     if String.IsNullOrEmpty(code) then
@@ -42,7 +63,7 @@ let validateUserStringCredentials code password =
 let update (msg: Msg) (pageModel: PageModel) =
     let clearStateWithError error =
         let model = { CollegeCodeString = ""; MockUserPassword = ""; User = Resolved (Error error)  }
-        LandingPage model, Cmd.ofMsg ShowLoginErrorToastUpdate
+        LandingPage model, Cmd.none // Cmd.ofMsg ShowLoginErrorToastUpdate
 
     let mapPrefixToRole prefixStr =
         match prefixStr with
@@ -88,9 +109,46 @@ let update (msg: Msg) (pageModel: PageModel) =
             let updatedModel = { model with User = InProgress }
             LandingPage updatedModel, Cmd.fromAsync platformUser
 
+    | (LandingPage model, ExecuteLoginWorkflow (Finished userSignInResult)) ->
+        match userSignInResult with
+        | Ok validUser ->
+            let updatedModel = { model with User = Resolved (Ok validUser) }
+            LandingPage updatedModel, Cmd.ofMsg ShowLoginSuccessToastUpdate
+        
         | Error loginError ->
             clearStateWithError loginError
 
+    | (LandingPage model, ShowLoginErrorToastUpdate) ->
+        // model.User
+        // |> Deferred.map (function // T
+        //     | Error error -> 
+        //         Toastr.message error.ErrorMessage
+        //         |> Toastr.title "Login error!!!"
+        //         |> Toastr.position TopRight
+        //         |> Toastr.timeout 5000
+        //         |> Toastr.withProgressBar
+        //         |> Toastr.showCloseButton
+        //         |> Toastr.error
+        // ) |> ignore
+        
+        LandingPage { model with User = HasNotStartedYet }, Cmd.ofMsg ClearTextInput
+
+    | (LandingPage model, ShowLoginSuccessToastUpdate) ->
+        // model.User 
+        // |> Deferred.map(function 
+        //     |Ok user ->
+        //         Toastr.message (sprintf "Welcome back %s!" user.FullName)
+        //         |> Toastr.title "Login success"
+        //         |> Toastr.position TopRight 
+        //         |> Toastr.timeout 4000
+        //         |> Toastr.showCloseButton
+        //         |> Toastr.success
+        // ) |> ignore
+
+        LandingPage model, Cmd.ofMsg RedirectToProfile
+    
+    | (LandingPage model, ClearTextInput) ->
+        LandingPage { model with MockUserPassword = ""; CollegeCodeString = "" }, Cmd.none 
 
     // Nice try - I won't allow you to do anything that shouldn't happen ;)
     | (_, _) -> pageModel, Cmd.none
@@ -130,8 +188,9 @@ let render (state: PageModel) (dispatch: Msg -> unit) =
                 ]
 
                 Html.input [
-                    prop.style [ style.margin 5; style.padding 20 ]
+                    prop.style [ style.margin 5; style.padding 20; style.width 300 ]
                     prop.onChange (SetCollegeCode >> dispatch)
+                    prop.valueOrDefault state.CurrentUserCode
                 ]
 
                 Html.br []
@@ -142,10 +201,11 @@ let render (state: PageModel) (dispatch: Msg -> unit) =
                 ]
 
                 Html.input [
-                    prop.style [ style.margin 20; style.padding 10; ]
+                    prop.style [ style.margin 20; style.padding 10; style.width 300 ]
                     prop.type' "password"
                     prop.name "user_password"
-                    prop.onChange (SetCollegeCode >> dispatch)
+                    prop.valueOrDefault state.CurrentUserPassword
+                    prop.onChange (SetUserPassword >> dispatch)
                 ]
             ]
 
