@@ -26,6 +26,9 @@ let defaultLandingPageState = { CollegeCodeString = ""; MockUserPassword = ""; U
 let init() = LandingPage defaultLandingPageState , Cmd.none
 
 let update (msg: Msg) (pageModel: PageModel) =
+    let clearStateWithError error =
+        let model = { CollegeCodeString = ""; MockUserPassword = ""; User = Resolved (Error error)  }
+        LandingPage model, Cmd.ofMsg ShowLoginErrorToastUpdate
     match (pageModel, msg) with
     | (LandingPage model, SetCollegeCode code) -> 
         let updatedModel = { model with CollegeCodeString = code }
@@ -39,7 +42,11 @@ let update (msg: Msg) (pageModel: PageModel) =
         let updatedModel = { model with User = InProgress}
         LandingPage updatedModel, Cmd.ofMsg (ExecuteLoginWorkflow Started)
 
-    // |(LandingPage model, ExecuteLoginWorkflow Started) -> 
+        | LoginError error -> 
+            clearStateWithError error
+
+        | Error loginError ->
+            clearStateWithError loginError
 
 
     // Nice try - I won't allow you to do anything that shouldn't happen ;)
