@@ -51,6 +51,10 @@ module Deferred =
         | InProgress -> InProgress
         | Resolved value -> transform value
 
+    let getOptResolved = function
+        | HasNotStartedYet | InProgress -> None
+        | Resolved value -> Some value
+
 type AsyncOperationStatus<'t> =
   | Started
   | Finished of 't
