@@ -1,4 +1,4 @@
-﻿module Shared
+module Shared
 
 open System
 
@@ -16,6 +16,8 @@ module AlphaNumericCode =
     }
     with 
         member x.IsStudentCode = x.UserPrefix = "STU"
+
+    let defaultCode = { UserPrefix = "NotUser"; UniversalNumber = 0 }
 
     /// A validation function based on length
     let private lengthValidator len (s:string) =
