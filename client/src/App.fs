@@ -43,6 +43,13 @@ let update (msg: Msg) (pageModel: PageModel) =
     let clearStateWithError error =
         let model = { CollegeCodeString = ""; MockUserPassword = ""; User = Resolved (Error error)  }
         LandingPage model, Cmd.ofMsg ShowLoginErrorToastUpdate
+
+    let mapPrefixToRole prefixStr =
+        match prefixStr with
+        | "STU" -> Some Student
+        | "PROF" -> Some Professor
+        | _ -> None 
+
     match (pageModel, msg) with
     | (LandingPage model, SetCollegeCode code) -> 
         let updatedModel = { model with CollegeCodeString = code }
@@ -53,8 +60,7 @@ let update (msg: Msg) (pageModel: PageModel) =
         LandingPage updatedModel, Cmd.none
 
     | (LandingPage model, InitiateLoginWorkflow) ->
-        let updatedModel = { model with User = InProgress}
-        LandingPage updatedModel, Cmd.ofMsg (ExecuteLoginWorkflow Started)
+        LandingPage model, Cmd.ofMsg (ExecuteLoginWorkflow Started)
 
         | LoginError error -> 
             clearStateWithError error
