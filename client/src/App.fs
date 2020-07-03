@@ -106,8 +106,6 @@ let renderAuthenticationResult (deferredAuthResult: Deferred<Result<ValidatedUse
             prop.text errorCode.ErrorMessage
         ]
 
-let csharpvfsharpimage() = StaticFile.import "./imgs/FSharp.V.CSharp2.png"
-
 let render (state: PageModel) (dispatch: Msg -> unit) =
 
     Html.div [
@@ -117,9 +115,8 @@ let render (state: PageModel) (dispatch: Msg -> unit) =
         ]
 
         prop.children [
-
             Html.img [
-                prop.src(csharpvfsharpimage())
+                prop.src (StaticFile.import "./imgs/FSharp.V.CSharp.png")
                 prop.width 500
             ]
 
