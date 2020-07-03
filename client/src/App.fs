@@ -25,6 +25,20 @@ let defaultLandingPageState = { CollegeCodeString = ""; MockUserPassword = ""; U
 
 let init() = LandingPage defaultLandingPageState , Cmd.none
 
+let validateUserStringCredentials code password =
+    if String.IsNullOrEmpty(code) then
+        LoginError MissingCollegeCode
+    elif String.IsNullOrEmpty(password) then
+        LoginError MissingPassword
+    else
+        match (code.StartsWith("STU") && code.Length = 8, code.StartsWith("PROF") && code.Length = 9) with 
+        | (true, _)->
+            OkForNextStage ("STU", code.Substring(3), password)
+        | (_, true) ->
+            OkForNextStage ("PROF", code.Substring(4), password)
+        | _ -> 
+            LoginError UnknownUserCode
+
 let update (msg: Msg) (pageModel: PageModel) =
     let clearStateWithError error =
         let model = { CollegeCodeString = ""; MockUserPassword = ""; User = Resolved (Error error)  }
