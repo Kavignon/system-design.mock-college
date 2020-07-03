@@ -67,6 +67,8 @@ type ValidatedMockStudent = {
     UserInformation: ValidUserInformation
     SemesterCourses: string list
     GPA: SchoolPerformance.Gpa
+    CompletedCreditCount: int
+    EnrolledCreditCount: int
 }
 
 type ValidatedMockProfessor = {
