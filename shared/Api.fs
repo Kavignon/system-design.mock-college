@@ -107,5 +107,5 @@ with
 /// A type that specifies the communication protocol between client and server
 /// to learn more, read the docs at https://zaid-ajaj.github.io/Fable.Remoting/src/basics.html
 type IServerApi = {
-    SignIn: MockUserCredentials -> Result<ValidatedUser, string>
+    SignIn: MockUserCredentials -> Async<Result<ValidatedUser, UserLoginError>>
 }
