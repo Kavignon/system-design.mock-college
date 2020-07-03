@@ -77,9 +77,20 @@ type ValidatedMockProfessor = {
     SupervisedStudentCount: int
 }
 
+let tryMakeFullName (firstName: string) (lastName: string) = 
+    if isNull firstName |> not && isNull lastName |> not then
+        Some (firstName + " " + lastName)
+    else
+        None
+
 type ValidatedUser =
     | ValidStudent of ValidatedMockStudent
     | ValidProfessor of ValidatedMockProfessor
+with 
+    member x.FullName =
+        match x with 
+        | ValidStudent vs -> (vs.UserInformation.FirstName, vs.UserInformation.LastName) ||> tryMakeFullName |> Option.defaultValue "Name missing"
+        | ValidProfessor vp -> (vp.UserInformation.FirstName, vp.UserInformation.LastName) ||> tryMakeFullName |> Option.defaultValue "Name missing"
 
 /// A type that specifies the communication protocol between client and server
 /// to learn more, read the docs at https://zaid-ajaj.github.io/Fable.Remoting/src/basics.html
