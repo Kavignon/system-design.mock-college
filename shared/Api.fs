@@ -42,7 +42,7 @@ module SchoolPerformance =
 
     let create value =
         match value with 
-        | x when value >= 1.0 && value <= 4.3 -> Some x
+        | x when value >= 1.0 && value <= 4.3 -> Some { Value = x }
         | _ -> None
 
 type CollegeCode = {
