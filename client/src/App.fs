@@ -62,8 +62,31 @@ let update (msg: Msg) (pageModel: PageModel) =
     | (LandingPage model, InitiateLoginWorkflow) ->
         LandingPage model, Cmd.ofMsg (ExecuteLoginWorkflow Started)
 
+    |(LandingPage model, ExecuteLoginWorkflow Started) -> 
+        let userValidationResult = validateUserStringCredentials model.CollegeCodeString model.MockUserPassword
+        match userValidationResult with
         | LoginError error -> 
             clearStateWithError error
+
+        | OkForNextStage (prefix, universalNumber, pwd) ->
+            let platformUser = async {
+                let userCollegeCode = 
+                    prefix
+                    |> mapPrefixToRole |> Option.defaultValue Student
+                    |> AlphaNumericCode.create prefix universalNumber |> Option.defaultValue defaultCode
+
+                let credentials = { Password = pwd; Code = userCollegeCode }
+                try 
+                    let! userSignInResult = Server.api.SignIn credentials
+                    return ExecuteLoginWorkflow (Finished userSignInResult)
+                with error ->
+                    Log.developmentError error
+                    let loginError = ServerError error.Message
+                    return ExecuteLoginWorkflow (Finished (Error loginError))
+            }
+            
+            let updatedModel = { model with User = InProgress }
+            LandingPage updatedModel, Cmd.fromAsync platformUser
 
         | Error loginError ->
             clearStateWithError loginError
