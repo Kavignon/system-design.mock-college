@@ -63,7 +63,7 @@ let validateUserStringCredentials code password =
 let update (msg: Msg) (pageModel: PageModel) =
     let clearStateWithError error =
         let model = { CollegeCodeString = ""; MockUserPassword = ""; User = Resolved (Error error)  }
-        LandingPage model, Cmd.none // Cmd.ofMsg ShowLoginErrorToastUpdate
+        LandingPage model, Cmd.ofMsg ShowLoginErrorToastUpdate
 
     let mapPrefixToRole prefixStr =
         match prefixStr with
@@ -116,34 +116,34 @@ let update (msg: Msg) (pageModel: PageModel) =
             LandingPage updatedModel, Cmd.ofMsg ShowLoginSuccessToastUpdate
         
         | Error loginError ->
-            clearStateWithError loginError
+            clearStateWithError loginError 
 
     | (LandingPage model, ShowLoginErrorToastUpdate) ->
-        // model.User
-        // |> Deferred.map (function // T
-        //     | Error error -> 
-        //         Toastr.message error.ErrorMessage
-        //         |> Toastr.title "Login error!!!"
-        //         |> Toastr.position TopRight
-        //         |> Toastr.timeout 5000
-        //         |> Toastr.withProgressBar
-        //         |> Toastr.showCloseButton
-        //         |> Toastr.error
-        // ) |> ignore
+        model.User
+        |> Deferred.map (function // T
+            | Error error -> 
+                Toastr.message error.ErrorMessage
+                |> Toastr.title "Login error!!!"
+                |> Toastr.position TopRight
+                |> Toastr.timeout 5000
+                |> Toastr.withProgressBar
+                |> Toastr.showCloseButton
+                |> Toastr.error
+        ) |> ignore
         
         LandingPage { model with User = HasNotStartedYet }, Cmd.ofMsg ClearTextInput
 
     | (LandingPage model, ShowLoginSuccessToastUpdate) ->
-        // model.User 
-        // |> Deferred.map(function 
-        //     |Ok user ->
-        //         Toastr.message (sprintf "Welcome back %s!" user.FullName)
-        //         |> Toastr.title "Login success"
-        //         |> Toastr.position TopRight 
-        //         |> Toastr.timeout 4000
-        //         |> Toastr.showCloseButton
-        //         |> Toastr.success
-        // ) |> ignore
+        model.User 
+        |> Deferred.map(function 
+            |Ok user ->
+                Toastr.message (sprintf "Welcome back %s!" user.FullName)
+                |> Toastr.title "Login success"
+                |> Toastr.position TopRight 
+                |> Toastr.timeout 4000
+                |> Toastr.showCloseButton
+                |> Toastr.success
+        )
 
         LandingPage model, Cmd.ofMsg RedirectToProfile
     
